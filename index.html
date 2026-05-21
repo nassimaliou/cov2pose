@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta name="description"
+        content="Cov2Pose leverages spatial covariance for direct manifold-aware 6-DoF object pose estimation.">
+  <meta name="keywords"
+        content="Cov2Pose, 6-DoF object pose estimation, direct pose regression, spatial covariance, SPD manifold, CVPR 2026">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Cov2Pose: Leveraging Spatial Covariance for Direct Manifold-aware 6-DoF Object Pose Estimation</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@700&display=swap" rel="stylesheet">
+  <link rel="icon" href="./static/images/icon.svg">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']]
+      }
+    };
+  </script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    async>
+  </script>
+</head>
+
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="https://nassimaliou.github.io/cov2pose/">
+
+    </a>
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="#intro">Introduction</a>
+      <a class="navbar-item" href="#method">Method</a>
+      <a class="navbar-item" href="#experiments">Experiments</a>
+      <a class="navbar-item" href="#BibTeX">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+
+      <h1 class="title is-1 publication-title">
+        <code>Cov2Pose</code>: Leveraging Spatial Covariance for Direct Manifold-aware 6-DoF Object Pose Estimation
+      </h1>
+
+      <div class="is-size-5 publication-authors">
+        <span class="author-block">
+          <a href="https://scholar.google.com/citations?user=S6LwRRcAAAAJ&hl=en">Nassim Ali Ousalah</a><sup>1</sup>,
+        </span>
+        <span class="author-block">
+          <a href="https://scholar.google.com/citations?user=DN_LqKQAAAAJ&hl=en">Peyman Rostami</a><sup>1</sup>,
+        </span>
+        <span class="author-block">
+          <a href="https://scholar.google.com/citations?user=izegIRsAAAAJ&hl=en">Vincent Gaudillière</a><sup>2</sup>,
+        </span>
+        <span class="author-block">
+          <a href="https://www.linkedin.com/in/ekoumandakis/">Emmanuel Koumandakis</a><sup>3</sup>,
+        </span>
+        <span class="author-block">
+          <a href="https://scholar.google.com/citations?user=K3EWusMAAAAJ&hl=en">Anis Kacem</a><sup>1</sup>,
+        </span>
+        <span class="author-block">
+          <a href="https://scholar.google.com/citations?user=gQjuVcEAAAAJ&hl=en">Enjie Ghorbel</a><sup>1,4</sup>,
+        </span>
+        <span class="author-block">
+          <a href="https://scholar.google.com/citations?user=WBmJVSkAAAAJ&hl=en">Djamila Aouada</a><sup>1</sup>
+        </span>
+      </div>
+
+      <div class="block center-media">
+                
+      </div>
+
+      <div class="is-size-5 publication-authors">
+        <span class="author-block"><sup>1</sup>Interdisciplinary Centre for Security, Reliability and Trust (SnT), University of Luxembourg</span>
+        <span class="author-block"><sup>2</sup>LORIA, Inria, Universit&eacute de Loraine</span>
+        <span class="author-block"><sup>3</sup>Infinite Orbits</span>
+        <span class="author-block"><sup>4</sup>Cristal Laboratory, University of Manouba</span>
+      </div>
+
+      <div class="column has-text-centered">
+        <div class="publication-links">
+
+          <span class="link-block">
+            <a href="https://arxiv.org/abs/2603.19961"
+               class="external-link button is-normal is-rounded is-dark">
+              <span class="icon">
+                <i class="ai ai-arxiv"></i>
+              </span>
+              <span>Paper</span>
+            </a>
+          </span>
+
+          <span class="link-block">
+            <a href="https://cvpr.thecvf.com/media/PosterPDFs/CVPR%202026/38768.png?t=1779205402.8064234"
+              class="external-link button is-normal is-rounded is-dark"
+              target="_blank"
+              rel="noopener noreferrer">
+              <span class="icon">
+                <i class="fas fa-image"></i>
+              </span>
+              <span>Poster</span>
+            </a>
+          </span>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Accepted at CVPR 2026 (Highlight)</h2>
+
+        <div class="content has-text-centered">
+          <div class="columns is-centered">
+            <div class="column is-full">
+              <img
+                src="./static/images/cvpr.png"
+                alt="CVPR 2026"
+                style="width: 500px; max-width: 100%; height: auto; display: block; margin: 0 auto;"
+              >
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<section class="section" id="intro">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+    
+            <h2 class="title is-3">Introduction</h2>
+
+          <div class="container is-max-desktop">
+            <div class="hero-body has-text-centered">
+
+              <img src="./static/images/motivation.png"
+                  alt="Cov2Pose method overview"
+                  style="max-width: 70%;">
+            </div>
+          </div>
+          
+          <div class="block content has-text-justified">
+            
+              <p>Estimating the 6-DoF pose of an object from a single RGB image is a central problem in computer vision, robotics, augmented reality, and autonomous systems. While many methods rely on intermediate correspondences, keypoints, or refinement stages, <code>Cov2Pose</code> follows a direct pose regression paradigm.</p>
+            
+              <p><p>The key idea behind <code>Cov2Pose</code> is to enrich the pose regression pipeline with spatial
+                    second-order statistics. Instead of relying solely on first-order or globally pooled features, <code>Cov2Pose</code> uses a covariance-based 
+                    representation that more effectively captures spatial relationships between regions in the input image, as shown in the figure above. <code>Cov2Pose</code> further introduces a manifold-aware formulation for pose regression by encoding
+                    pose information through symmetric positive definite representations. This allows the
+                    network to learn pose predictions in a geometry-aware representation space.  The main contributions can be summarized as follows,</p>
+              <ol>
+                <li>The first covariance-based deep learning framework for RGB-based end-to-end 6-DoF object pose regression, which leverages the spatial covariance of backbone features to encode higher-order statistics.</li>
+                <li>A manifold-aware training pipeline that applies geometry-preserving dimensionality reduction using Bilinear Mapping layers (BiMap) [1] to learn a compact SPD representation.</li>
+                <li>A fully differentiable, CAD-free, one-to-one, and continuous pose regressor that maps the latent SPD matrix to a continuous 6D rotation representation and translation via a differentiable Cholesky decomposition.</li>
+                <li>Extensive experiments on three object pose benchmarks, namely, LineMOD [2], Occ-LineMOD [3] and YCBVideo [4], showing that <code>Cov2Pose</code> achieves state-ofthe-art results as compared to direct regression methods.</li>
+              </ol></p>
+              <div class="block center-media">
+                
+              </div>
+            
+            
+          </div>
+          
+        </div>
+      </div>
+  </div>
+</section>
+
+
+<section class="section" id="method">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="title is-3">Method</h2>
+
+    <div>
+      <img
+        src="./static/images/method-overview.png"
+        alt="Cov2Pose method overview"
+        style="max-width: 100%; height: auto;"
+      >
+    </div>
+
+    <div class="content" style="max-width: 800px; margin: 1rem auto 0;">
+      <p>
+        An overview of the proposed pose estimation framework is illustrated in the figure above:
+      </p>
+
+      <ol type="A" style="text-align: left; display: inline-block;">
+        <li>
+          The input image containing the object of interest is fed into a CNN backbone to extract feature maps.
+          Spatial covariance pooling is applied over the \(H \times W\) grid.
+          The resulting covariance matrix is then passed to the pose head, which regresses the object's pose.
+        </li>
+
+        <li>
+          Rotation vectors and translation are decoded from the compact \(4 \times 4\) SPD matrix using a
+          differentiable Cholesky layer. The rotation is then mapped to \(\mathrm{SO}(3)\) using
+          Gram-Schmidt orthogonalization.
+        </li>
+
+        <li>
+          Each layer of the pose regression head applies a BiMap operation followed by an eigenvalue
+          rectification step [1], preserving the strict positive definiteness of the representation and
+          enabling effective manifold-aware optimization.
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="experiments">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Experiments</h2>
+
+    <div class="content">
+      <p>
+        <code>Cov2Pose</code> is evaluated on standard 6-DoF object pose estimation benchmarks and compared
+        against existing direct and indirect pose estimation approaches. Additional results on the task of Absolute camera Pose Regression (APR) on Cambridge Landmarks and spacecraft pose estimation task on SPEED+ can be found on the supplementary material of the paper.
+      </p>
+    </div>
+
+    <h3 class="title is-4">Quantitative Results</h3>
+
+    <div class="has-text-centered">
+      <img src="./static/images/quantitative-results.png"
+           alt="Cov2Pose quantitative results"
+           style="max-width: 100%;">
+    </div>
+
+    <br>
+
+    <h3 class="title is-4">Qualitative Results</h3>
+
+    <div class="has-text-centered">
+      <img src="./static/images/qualitative-results.png"
+           alt="Cov2Pose qualitative results"
+           style="max-width: 100%;">
+    </div>
+  </div>
+  
+</section>
+
+
+<section class="section" id="acknowledgements">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Acknowledgements</h2>
+
+    <div class="content">
+      <p>
+        The present work is supported by the
+        National Research Fund (FNR), Luxembourg, under the
+        C21/IS/15965298/ELITE project, and by Infinite Orbits.
+        Experiments were performed on the Luxembourg national
+        supercomputer MeluXina at LuxProvide.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+
+<pre><code>@inproceedings{ousalah2026cov2pose,
+  title={Cov2Pose: Leveraging Spatial Covariance for Direct Manifold-aware 6-DoF Object Pose Estimation},
+  author={Ali Ousalah, Nassim and Rostami, Peyman and Gaudilli{\`e}re, Vincent and Koumandakis, Emmanuel and Kacem, Anis and Ghorbel, Enjie and Aouada, Djamila},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2026}
+}</code></pre>
+
+  </div>
+</section>
+
+
+<section class="section" id="references">
+  <div class="container is-max-desktop">
+    <h2 class="title is-4">References</h2>
+
+    <div class="content is-size-7">
+      <ol>
+        <li id="ref-spdnet">
+          Zhiwu Huang and Luc Van Gool.
+          Riemannian network for SPD matrix learning.
+          <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2017.
+        </li>
+
+        <li id="ref-linemod">
+          Stefan Hinterstoisser, Vincent Lepetit, Slobodan Ilic, Stefan Holzer,
+          Gary Bradski, Kurt Konolige, and Nassir Navab.
+          Model-based training, detection, and pose estimation of texture-less
+          3D objects in heavily cluttered scenes.
+          In <em>Computer Vision &ndash; ACCV 2012</em>, pages 548&ndash;562.
+          Springer, Berlin, Heidelberg, 2013.
+        </li>
+
+        <li id="ref-brachmann2014">
+          Eric Brachmann, Alexander Krull, Frank Michel, Stefan Gumhold,
+          Jamie Shotton, and Carsten Rother.
+          Learning 6D object pose estimation using 3D object coordinates.
+          In <em>Computer Vision &ndash; ECCV 2014</em>, pages 536&ndash;551.
+          Springer, Cham, 2014.
+        </li>
+
+        <li id="ref-posecnn">
+          Yu Xiang, Tanner Schmidt, Venkatraman Narayanan, and Dieter Fox.
+          PoseCNN: A convolutional neural network for 6D object pose estimation
+          in cluttered scenes.
+          <em>Robotics: Science and Systems</em>, 2018.
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website template adapted from
+            <a href="https://nerfies.github.io/">Nerfies</a>.
+          </p>
+
+          <p>
+            The original website template is licensed under a
+            <a rel="license"
+               href="http://creativecommons.org/licenses/by-sa/4.0/">
+              Creative Commons Attribution-ShareAlike 4.0 International License
+            </a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+</html>
